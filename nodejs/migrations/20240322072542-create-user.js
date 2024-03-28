@@ -40,7 +40,7 @@ module.exports = {
                   }
                 });
       const workFactor = 8;
-      const password = "info@whizkraft.com"
+      const password = "info@whizkraft.net"
       var password_d = await bcrypt.genSalt(workFactor)
                             .then(salt => {
                               return bcrypt.hash(password, salt);
@@ -54,8 +54,9 @@ module.exports = {
 
           await queryInterface.bulkInsert('Users', [{
               name: 'Admin',
-              email: 'info@whizkraft.com',
+              email: 'info@whizkraft.net',
               password: password_d,
+              role: "admin"
             }]); 
 
       }                  

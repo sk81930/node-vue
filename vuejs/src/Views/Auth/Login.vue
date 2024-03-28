@@ -14,7 +14,7 @@
                       </div>
 
                       <form>
-                        <p v-if="Object.keys(validationErrors).length != 0" class='text-center '><small class='text-danger'>Incorrect Email or Password</small></p>
+                        <p v-if="(validationError) != ''" class='text-center '><small class='text-danger'>{{validationError}}</small></p>
                         <div class="form-outline mb-4">
                                 <label 
                                     htmlFor="email"
@@ -81,7 +81,7 @@
         return {
             email:'',
             password:'',
-            validationErrors:{},
+            validationError:'',
             isSubmitting:false,
         };
       },
@@ -91,15 +91,16 @@
         ...mapMutations(["setUser", "setToken"]),
           async loginAction(){
             this.isSubmitting = true
+            this.validationError = '';
             let payload = {
                 email: this.email,
                 password: this.password,
             }
             await agent.Auth.login(payload).then(async response => {
-                      if(response.data.access_token){
-                        await Store.commit('auth/setToken', response.data.access_token);
-                        await Store.commit('auth/setUser', response.data.user);
-                        if(response.data.user.role == "admin"){
+                      if(response.data.isSuccess == true && response.data.data.token){
+                        await Store.commit('auth/setToken', response.data.data.token);
+                        await Store.commit('auth/setUser', response.data.data.user);
+                        if(response.data.data.user.role == "admin"){
                             this.$router.push('/admin/dashboard')
                         }else{
                             this.$router.push('/manager/dashboard')
@@ -110,11 +111,8 @@
                   })
                   .catch(error => {
                       this.isSubmitting = false
-                      if (error.response.data.errors != undefined) {
-                          this.validationErrors = error.response.data.errors
-                      }
-                      if (error.response.data.error != undefined) {
-                          this.validationErrors = error.response.data.error
+                      if (error.response.data.isSuccess == false) {
+                          this.validationError = error.response.data.message
                       }
                       return error
                   });

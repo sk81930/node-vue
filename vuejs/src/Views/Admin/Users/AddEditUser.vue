@@ -7,8 +7,8 @@
       class="mx-20"
     >
     <BAlert :model-value="true" variant="danger" v-if="errors">
-        <ul v-for="(errorD) in errors">
-          <li v-for="(error) in errorD">
+        <ul>
+          <li v-for="(error) in errors">
             <span>{{error}}</span>
           </li>  
         </ul>
@@ -133,24 +133,32 @@
                           this.form.password = "";
                           this.form.confirm_password = "";
                           this.form.role = "user";
+                        }else{
+
+                          this.form.password = "";
+                          this.form.confirm_password = "";
+
                         }
 
 
                 })
                 .catch(error => {
-                     
-                     let errorsData = Object.values(error.response.data.errors);
-                     this.errors = errorsData;
-                });;
 
-            console.log(returndata)
+
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
+
+                });
 
            // debugger;
           },
           async getUserByIdFunc(userid) {
               await store.dispatch('admin/getUserById', {userid:userid}).then(async response => {
 
-                    let resultt = response.data;
+                    let resultt = response.data.data;
 
                     if(resultt.user && resultt.user.id){
 
@@ -167,8 +175,11 @@
               })
               .catch(error => {
                    
-                   let errorsData = Object.values(error.response.data.errors);
-                   this.errors = errorsData;
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
               });
           },
           onReset(event) {

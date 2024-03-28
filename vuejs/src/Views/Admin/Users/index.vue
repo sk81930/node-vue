@@ -77,7 +77,7 @@
       },
       created() {
 
-        this.getUserdata({});
+        this.getUserdata({pagesize: this.params.pagesize});
 
 
 
@@ -95,13 +95,13 @@
           async getUserdata(data) {
                var returndata =  await store.dispatch('admin/getUsers', data).then(response => {
 
-                    let result = response.data.users;
+                    let result = response.data.data.users;
 
-                      if(result.data.length > 0){
 
-                          this.rows = result.data;
-                          this.total_rows = result.total;
-                          this.params.pagesize = result.per_page;
+                      if(result.rows && result.rows.length > 0){
+
+                          this.rows = result.rows;
+                          this.total_rows = result.count;
                           this.hasData = true;
 
 

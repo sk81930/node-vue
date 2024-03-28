@@ -25,7 +25,7 @@
             ref="datatable"
         >
             <template #created_by="data">
-                <strong>{{ capitalizeFirstLetter(data.value.created_by.name)+"(ID:"+data.value.created_by.id+")" }}</strong>
+                <strong>{{ capitalizeFirstLetter(data.value.created_by_user.name)+"(ID:"+data.value.created_by_user.id+")" }}</strong>
             </template>
             <template #actions="data">
                 <div class="d-flex gap-4">
@@ -77,7 +77,7 @@
       },
       created() {
 
-        this.getProjectdata({});
+        this.getProjectdata({pagesize: this.params.pagesize});
 
 
 
@@ -95,13 +95,13 @@
           async getProjectdata(data) {
                var returndata =  await store.dispatch('manager/getProjects', data).then(response => {
 
-                    let result = response.data.projects;
+                      let result = response.data.data.projects;
 
-                      if(result.data.length > 0){
 
-                          this.rows = result.data;
-                          this.total_rows = result.total;
-                          this.params.pagesize = result.per_page;
+                      if(result.rows && result.rows.length > 0){
+
+                          this.rows = result.rows;
+                          this.total_rows = result.count;
                           this.hasData = true;
 
 

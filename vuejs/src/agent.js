@@ -45,33 +45,33 @@ const requests = {
 }
 
 const Auth = {
-	user: () => requests.get("/api/user"),
-	logout: () => requests.post("/api/logout",{}),
-	login: (formData) => requests.post("/api/login", formData),
-	getUserRole: () => requests.get("/api/getUserRole"),
+	user: () => requests.get("/auth/user"),
+	logout: () => requests.post("/auth/logout",{}),
+	login: (formData) => requests.post("/auth/login", formData),
+	getUserRole: () => requests.get("/auth/getUserRole"),
 }
 const User = {
-	updateProfile: (formData) => requests.post("/api/updateProfile",formData),
+	updateProfile: (formData) => requests.post("/auth/updateProfile",formData),
 }
 const Admin = {
-	getUsers: (data) => requests.get("/api/getUsers",data),
-	AddEditUser: (formData) => requests.post("/api/AddEditUser",formData),
-	getUserById: (data) => requests.get("/api/getUserById/"+data.userid,""),
+	getUsers: (data) => requests.get("/user/getUsers",data),
+	AddEditUser: (formData) => requests.post("/user/AddEditUser",formData),
+	getUserById: (data) => requests.get("/user/getUserById/"+data.userid,""),
 }
 const Manager = {
-	getProjects: (data) => requests.get("/api/getProjects",data),
-	AddEditProject: (formData) => requests.post("/api/AddEditProject",formData),
-	getProjectById: (data) => requests.get("/api/getProjectById/"+data.id,""),
+	getProjects: (data) => requests.get("/project/getProjects",data),
+	AddEditProject: (formData) => requests.post("/project/AddEditProject",formData),
+	getProjectById: (data) => requests.get("/project/getProjectById/"+data.id,""),
 }
 const Project = {
-	getAllProject: () => requests.get("/api/getAllProject"),
+	getAllProject: () => requests.get("/project/getAllProject"),
 }
 const Task = {
-	AddEditTask: (formData) => requests.post("/api/AddEditTask",formData),
-	getTasks: (data) => requests.get("/api/getTasks",data),
-	getTaskById: (data) => requests.get("/api/getTaskById/"+data.id,""),
-	AddComment: (formData) => requests.post("/api/AddComment/",formData),
-	getComments: (data) => requests.get("/api/getComments/"+data.id,data),
+	AddEditTask: (formData) => requests.post("/task/AddEditTask",formData),
+	getTasks: (data) => requests.get("/task/getTasks",data),
+	getTaskById: (data) => requests.get("/task/getTaskById/"+data.id,""),
+	AddComment: (formData) => requests.post("/task/AddComment/",formData),
+	getComments: (data) => requests.get("/task/getComments/"+data.id,data),
 }
 export default {
 	Auth,

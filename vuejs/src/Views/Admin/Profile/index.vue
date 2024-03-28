@@ -111,7 +111,6 @@
 
                              this.successprofile = response.data.message;
 
-                             console.log(store)
 
 
                 })

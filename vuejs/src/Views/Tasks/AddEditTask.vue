@@ -225,11 +225,11 @@
           async getUserRoleFunc() {
               await store.dispatch('auth/getUserRole').then(async response => {
 
-                   if(response.data && response.data.userrole && response.data.userrole.length > 0){
+                   if(response.data && response.data.data && response.data.data.userrole && response.data.data.userrole.length > 0){
 
                       var dataUser = [];
 
-                      response.data.userrole.forEach(function(user,index){
+                      response.data.data.userrole.forEach(function(user,index){
 
                           dataUser.push({value: user.id, label: user.name+" (Role: "+user.role+")"});
                       })
@@ -273,7 +273,7 @@
           async getAllProjectFunc() {
                var returndata =  await store.dispatch('project/getAllProject').then(response => {
 
-                    let projectss = response.data.projects;
+                    let projectss = response.data.data.projects;
 
 
                       if(projectss.length > 0){

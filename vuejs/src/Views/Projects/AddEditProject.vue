@@ -14,8 +14,8 @@
     </template>
 
     <BAlert :model-value="true" variant="danger" v-if="errors">
-        <ul v-for="(errorD) in errors">
-          <li v-for="(error) in errorD">
+        <ul>
+          <li v-for="(error) in errors">
             <span>{{error}}</span>
           </li>  
         </ul>
@@ -162,8 +162,11 @@
             })
             .catch(error => {
                  
-                 let errorsData = Object.values(error.response.data.errors);
-                 this.errors = errorsData;
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
             });;
 
           //  console.log(returndata)
@@ -173,7 +176,7 @@
           async getProjectByIdFunc(id) {
               await store.dispatch('manager/getProjectById', {id:id}).then(async response => {
 
-                    let resultt = response.data;
+                    let resultt = response.data.data;
 
 
 
@@ -193,8 +196,11 @@
               })
               .catch(error => {
                    
-                   let errorsData = Object.values(error.response.data.errors);
-                   this.errors = errorsData;
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
               });
           },
           onReset(event) {

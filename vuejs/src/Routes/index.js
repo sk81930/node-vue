@@ -33,6 +33,7 @@ function requireLogin(to, from, next) {
     let isLogin = false;
 
     isLogin = !!store.state.auth.isLogin;
+   
 
 
     if (!isLogin) {

@@ -40,8 +40,8 @@ export default {
         async getUser({commit}) {
                   await agent.Auth.user().then(response => {
 
-                      if(response.data.user){
-                        store.commit('auth/setUser', response.data.user);
+                      if(response.data.data.user){
+                        store.commit('auth/setUser', response.data.data.user);
                       }
                       return response;
                   })
@@ -58,20 +58,10 @@ export default {
             return await agent.Auth.getUserRole();
         },
         async logout({commit}) {
-                  await agent.Auth.logout().then(response => {
-                      if(response.data.message){
-                         commit('setUser', null)
-                         commit('setToken', null)
-                         commit('setLogin', false)
-                         window.location.reload();
-                      }
-                      return response;
-                  })
-                  .catch(error => {
-                     window.location.reload();
-                  });
-               //this.$router.push('/')
-              // window.location.reload();
+                commit('setUser', null)
+                commit('setToken', null)
+                commit('setLogin', false)
+                window.location.reload();
         },
     }
 }
