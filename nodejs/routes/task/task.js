@@ -43,4 +43,26 @@ router.get("/getTaskById/:id", Middleware.authenticate, (req, res, next) => {
    }
 });
 
+router.get("/getComments/:taskid", Middleware.authenticate, (req, res, next) => {
+  Middleware.hasRole(req, res, next, ['admin','manager']);
+}, async (req,res) => { 
+   const response = new baseResponse(res);
+   try {
+     let result = await TaskController.getComments(req.session,req.params,req.query,res);
+   } catch(err) {
+      response.sendResponse([], false, err.message, 201);
+   }
+});
+
+router.post("/AddComment", Middleware.authenticate, (req, res, next) => {
+  Middleware.hasRole(req, res, next, ['admin','manager']);
+}, async (req,res) => { 
+   const response = new baseResponse(res);
+   try {
+     let result = await TaskController.AddComment(req.session,req.body,req.files,res);
+   } catch(err) {
+      response.sendResponse([], false, err.message, 201);
+   }
+});
+
 module.exports = router

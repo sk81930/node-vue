@@ -73,8 +73,11 @@
   import Store from '../../Store';
   import agent from '../../agent';
 
+
+
   import Logo from "../../Assets/images/logo.png";
   import "../../Assets/scss/login.scss";
+  let socket = null;
   export default {
       name: 'Login',
       data() {
@@ -98,8 +101,13 @@
             }
             await agent.Auth.login(payload).then(async response => {
                       if(response.data.isSuccess == true && response.data.data.token){
+
                         await Store.commit('auth/setToken', response.data.data.token);
                         await Store.commit('auth/setUser', response.data.data.user);
+                        await Store.dispatch('auth/initializeSocket');
+
+                        
+
                         if(response.data.data.user.role == "admin"){
                             this.$router.push('/admin/dashboard')
                         }else{
@@ -110,6 +118,7 @@
                       return response;
                   })
                   .catch(error => {
+                    console.log(error)
                       this.isSubmitting = false
                       if (error.response.data.isSuccess == false) {
                           this.validationError = error.response.data.message

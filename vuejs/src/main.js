@@ -15,6 +15,8 @@ import './Assets/scss/common.scss';
 
 
 
+
+
 createApp(MyApp)
 .use(router)
 .use(createBootstrap({components: true, directives: true}))

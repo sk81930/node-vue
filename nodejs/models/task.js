@@ -10,7 +10,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // define association here
+        task.belongsTo(models.User, {foreignKey: 'created_by', as: 'created_by_user'});
+        task.belongsTo(models.User, {foreignKey: 'assign_to', as: 'assign_to_user'});
+        task.belongsTo(models.project, {foreignKey: 'project', as: 'project_data'});
+
+      // task.belongsToMany(models.User, {through: 'Users', foreignKey: 'observer', as: 'observer_users'})
+
+       //task.belongsToMany(models.User, {through: 'tasks',foreignKey: 'project', constraints: true, as: 'observer_users'});
     }
   }
   task.init({

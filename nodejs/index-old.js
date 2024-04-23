@@ -19,7 +19,7 @@ let Middleware = new MiddlewareClass;
 
 var io = require('socket.io')(http);
 
-/*io.on("connection", socket =>{
+io.on("connection", socket =>{
     console.log("connected", socket.id)
 
     socket.on("join", roomName =>{
@@ -63,13 +63,13 @@ var io = require('socket.io')(http);
        socket.leave(roomName);
        socket.broadcast.to(roomName).emit("leave");
     });
-});*/
+});
 
-io.use(Middleware.socketAuth);
+/*io.use(Middleware.socketAuth);
 
 let socket = new socketControllerClass;
 
-socket.connection(io);
+socket.connection(io);*/
 
 
 let dbConfig = require(`./config/connection.js`);

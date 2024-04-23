@@ -73,6 +73,12 @@ const Task = {
 	AddComment: (formData) => requests.post("/task/AddComment/",formData),
 	getComments: (data) => requests.get("/task/getComments/"+data.id,data),
 }
+const Chat = {
+	sendMessage: (formData) => requests.post("/chat/sendMessage",formData),
+	getChatByConId: (formData) => requests.post("/chat/getChatByConId",formData),
+	addChatUser: (formData) => requests.post("/chat/addChatUser",formData),
+	getConversations: () => requests.get("/chat/getConversations"),
+}
 export default {
 	Auth,
 	User,
@@ -80,6 +86,7 @@ export default {
 	Manager,
 	Project,
 	Task,
+	Chat,
 	setToken: (_token) => {
     	token = _token;
   	},

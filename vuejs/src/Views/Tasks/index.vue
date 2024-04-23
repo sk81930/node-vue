@@ -94,15 +94,7 @@
       },
       created() {
 
-        this.getTaskdata({});
-
-
-
-       
-        // let user = store.getters["auth/user"];
-        // this.form.name = user.name;
-        // this.form.email = user.email;
-         
+        this.getTaskdata({pagesize: this.params.pagesize});
       },
       methods: {
           capitalizeFirstLetter(string) {
@@ -112,17 +104,21 @@
           async getTaskdata(data) {
                var returndata =  await store.dispatch('task/getTasks', data).then(response => {
 
-                    let result = response.data.tasks;
 
-                      if(result.data.length > 0){
+                    let result = response.data.data.tasks;
 
-                          this.rows = result.data;
-                          this.total_rows = result.total;
-                          this.params.pagesize = result.per_page;
-                          this.hasData = true;
+                    console.log(response)
 
 
-                      }
+                    if(result.rows && result.rows.length > 0){
+
+
+                           this.rows = result.rows;
+                           this.total_rows = result.count;
+                           this.hasData = true;
+
+
+                    }
 
 
                 })

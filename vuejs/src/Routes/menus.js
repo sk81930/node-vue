@@ -16,6 +16,10 @@ adminMenus.push(
       title: "Users",
       href: "/admin/users",
     },
+    {
+      title: "Chat",
+      href: "/admin/chat",
+    },
 );
 
 
@@ -39,6 +43,10 @@ managerMenus.push(
     {
       title: "Profile",
       href: "/manager/profile",
+    },
+    {
+      title: "Chat",
+      href: "/manager/chat",
     },
 );
 

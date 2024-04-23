@@ -8,10 +8,10 @@ const sequelize = new Sequelize(
     db.password,
     {
       host:  db.host,
-      dialect: 'mysql'
+      dialect: 'mysql',
+      logging: false
     }
   );
-
 sequelize.authenticate().then(() => {
    console.log('Connected database: '+db.database);
 }).catch((error) => {

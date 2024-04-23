@@ -26,6 +26,8 @@ module.exports = (sequelize, DataTypes) => {
 
     }
 
+    sequelize.options.logging = false;
+
     User.init({
         name:DataTypes.STRING,
         email:DataTypes.STRING,

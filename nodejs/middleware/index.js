@@ -92,6 +92,47 @@ class Middleware {
 
           // console.log(Authorization)
     }
+    socketAuth = async (socket, next) => {
+
+        if (socket.handshake.auth && socket.handshake.auth.token) {
+            // Extract token from handshake and verify it
+                const token = socket.handshake.auth.token;
+
+                try{
+                    
+                    let result = await jwtHelper.isValid(token);
+
+
+                    if(result){
+
+                        const user = await UserModal.findOne({
+                            where: {id: result.id}
+                        });
+
+                        if (!user) {
+                             return next(new Error('Webscoket User not found'));
+                        }
+
+                        socket.user = user;
+                        return next();
+                        
+
+                    }else{
+                        return next(new Error('Webscoket Access denied'));
+                    }
+
+
+                }catch(e){
+
+                    return next(new Error('Webscoket '+e.message));
+
+                }
+        } else {
+            // No token provided, deny connection
+            return next(new Error('Webscoket Authentication error'));
+        }
+    }
+    
 }
 
 module.exports = Middleware;

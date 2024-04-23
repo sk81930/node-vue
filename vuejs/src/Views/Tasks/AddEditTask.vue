@@ -13,8 +13,8 @@
       
     </template>
     <BAlert :model-value="true" variant="danger" v-if="errors">
-        <ul v-for="(errorD) in errors">
-          <li v-for="(error) in errorD">
+        <ul>
+          <li v-for="(error) in errors">
             <span>{{error}}</span>
           </li>  
         </ul>
@@ -43,7 +43,7 @@
                  height: 200,
                  menubar: false,
                  plugins: [
-                   'advlist advcode autolink lists link image charmap print preview anchor',
+                   'advlist autolink lists link image charmap print preview anchor',
                    'searchreplace visualblocks code fullscreen',
                    'insertdatetime media table paste code help wordcount'
                  ],
@@ -122,15 +122,16 @@
               priorityOptions: [{"label": "High",value : "high"},{"label": "Medium",value : "medium"},{"label": "Low",value : "low"}],
           }
       },
-      created() {
+      async created() {
+        await this.getUserRoleFunc();
+        await this.getAllProjectFunc();
         if ('id' in this.$route.params) {
             var id = this.$route.params.id;
 
             this.getTaskByIdFunc(id);
 
         }
-        this.getUserRoleFunc();
-        this.getAllProjectFunc();
+        
 
         // let user = store.getters["auth/user"];
         // this.form.name = user.name;
@@ -171,8 +172,11 @@
             })
             .catch(error => {
                  
-                 let errorsData = Object.values(error.response.data.errors);
-                 this.errors = errorsData;
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
             });;
 
           //  console.log(returndata)
@@ -182,7 +186,7 @@
           async getTaskByIdFunc(id) {
               await store.dispatch('task/getTaskById', {id:id}).then(async response => {
 
-                    let resultt = response.data;
+                    let resultt = response.data.data;
 
 
 
@@ -194,17 +198,26 @@
                         this.form.description = resultt.task.description;
                         this.form.project = resultt.task.project;
                         this.form.assign_to = resultt.task.assign_to;
-                        if(resultt.task.observer_users && resultt.task.observer_users.length > 0){
+                        if(resultt.task.observer && resultt.task.observer.length > 0){
 
-                          var dataUser = [];
 
-                          resultt.task.observer_users.forEach(function(user,index){
+                          let dataOptions = this.observerOptions;
+                          if(dataOptions && dataOptions.length > 0){
+                            let dataOptionsSelected = [];
+                            this.observerOptions.forEach(function(user,index){
 
-                              dataUser.push({value: user.id, label: user.name+" (Role: "+user.role+")"});
-                          })
+                                if(resultt.task.observer && resultt.task.observer.includes(user.value)){
 
-                          this.form.observer = dataUser;
+                                  dataOptionsSelected.push(user);
 
+                                }
+                            })
+                            if(dataOptionsSelected && dataOptionsSelected.length > 0){
+                                this.form.observer = dataOptionsSelected
+                            }
+                          }
+                        
+                          
 
                         }
 
@@ -218,8 +231,11 @@
               })
               .catch(error => {
                    
-                   let errorsData = Object.values(error.response.data.errors);
-                   this.errors = errorsData;
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
               });
           },
           async getUserRoleFunc() {
@@ -249,22 +265,11 @@
 
                   var res_error = error.response;
 
-                  if(res_error && res_error.data && res_error.data.error){
-                     let errorr = [];
-
-                     errorr[0] = {"error": res_error.data };
-
-                     let errorsData2 = Object.values(errorr[0]);
-
-                     this.errors = errorsData2;
-
-                  }else{
-
-                    let errorsData = Object.values(error.response.data.errors);
-                    this.errors = errorsData;
-
-                  }
-
+                    if(error.response.data.message && Array.isArray(error.response.data.message)){
+                      this.errors = error.response.data.message;
+                    }else{
+                      this.errors = [error.response.data.message];
+                    }
 
                    
                    

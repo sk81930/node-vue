@@ -23,7 +23,8 @@ import Tasks from '../Views/Tasks/index.vue'
 import AddEditTask from '../Views/Tasks/AddEditTask.vue'
 import ViewTask from '../Views/Tasks/ViewTask.vue'
 
-
+// Chat
+import Chat from '../Views/Chat/index.vue'
 
 import Login from "../Views/Auth/Login.vue";
 
@@ -108,6 +109,16 @@ routes.push({
             name: 'Admin Profile',
             component: AdminProfile,
         },
+        {
+            path: '/admin/chat',
+            name: 'Admin Chat',
+            component: Chat,
+        },
+        {
+            path: '/admin/chat/:id',
+            name: 'Admin Chat user',
+            component: Chat,
+        },
     ]  
 });
 
@@ -163,6 +174,16 @@ routes.push({
             path: '/manager/tasks/view/:id',
             name: 'View Task',
             component: ViewTask,
+        },
+        {
+            path: '/manager/chat',
+            name: 'Manager Chat',
+            component: Chat,
+        },
+        {
+            path: '/manager/chat/:id',
+            name: 'manager Chat user',
+            component: Chat,
         },
     ]  
 });

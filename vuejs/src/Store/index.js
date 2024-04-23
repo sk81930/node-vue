@@ -6,6 +6,7 @@ import admin from './modules/admin';
 import manager from './modules/manager';
 import project from './modules/project';
 import task from './modules/task';
+import chat from './modules/chat';
 
 export default createStore({
      plugins:[
@@ -18,5 +19,6 @@ export default createStore({
         manager,
         project,
         task,
+        chat,
     }
 })

@@ -32,14 +32,14 @@
                     <h4>{{comment.created_by_user.name}}</h4>
                     <p v-html="comment.comment"></p>
                     <div class="tools_comment">
-                      <span>{{time_ago(comment.updated_at)}}</span>
+                      <span>{{time_ago(comment.updatedAt)}}</span>
                     </div>
                   </div>
                   <div class="attachments">
                     <ul class="list_attachments col-md-12">
                       <!-- Start List Comment 1 -->
                       <li class="attachment_result row" v-for="(attachment, indexA) in comment.attachments_data">
-                         <a :href="attachment.path" download>{{attachment.name}}</a>
+                         <a :href="apiUrl+attachment.path" target="_blank" download>{{attachment.name}}</a>
                       </li>
                     </ul>
                   </div>
@@ -60,6 +60,9 @@
 
   import { ref,watchEffect } from 'vue'
 
+  const API_ROOT = import.meta.env.VITE_API_URL;
+
+
   import axios from 'axios';
 
   import { mapMutations } from "vuex";
@@ -78,8 +81,10 @@
       },
       data() {
           return {
+            apiUrl : API_ROOT,
             comments: [],
             currentPage: 1,
+            pagesize: 10,
             maxpage: null,
             totalComment: null,
             id: null,
@@ -92,7 +97,7 @@
             var id = this.$route.params.id;
             this.id = id;
 
-            this.getCommentsFunc({id:id});
+            this.getCommentsFunc({pagesize:this.pagesize,id:id});
 
         }
          
@@ -115,12 +120,13 @@
           resetpage() {
             this.comments = [];
             this.currentPage = 1;
-            this.getCommentsFunc({id:this.id});
+            this.getCommentsFunc({pagesize:this.pagesize,id:this.id});
           },
           loadMore() {
             this.currentPage += 1;
             var parmas = {};
             parmas.id = this.id;
+            parmas.pagesize = this.pagesize;
             parmas.page = this.currentPage;
             this.getCommentsFunc(parmas)
           },
@@ -132,34 +138,39 @@
 
                    this.loadmoreloader = false;
 
-                   if(response.data && response.data.comments){
+                   if(response.data && response.data.data && response.data.data){
 
-                      if(response.data.comments.last_page){
-                         this.maxpage = response.data.comments.last_page;
+                      var comments = response.data.data;
+
+                      if(comments.last_page){
+                         //this.maxpage = response.data.comments.last_page;
                       }
-                      if(response.data.comments.total){
-                         this.totalComment = response.data.comments.total;
+                      if(comments.count){
+                         this.maxpage = Math.ceil(comments.count/this.pagesize);
+                         this.totalComment = comments.count;
+                      }
+
+                     
+
+                      if(comments && comments.rows.length > 0){
+
+                          let comments_data =  comments.rows;
+
+                          let dataC = this.comments;
+
+                          comments_data.forEach(function(cm,index){
+                            
+                             dataC.push(cm);
+                          })
+                          this.comments = dataC;
+ 
+     
                       }
                        
                    }
 
 
-                   if(response.data && response.data.comments && response.data.comments.data.length > 0){
-
-
-                      let comments_data =  response.data.comments.data;
-
-                      let dataC = this.comments;
-
-                      comments_data.forEach(function(cm,index){
-                        
-                         dataC.push(cm);
-                      })
-                      this.comments = dataC;
-
-                      
- 
-                   }
+                   
 
               }).catch(error => {
                 this.loadmoreloader = false;

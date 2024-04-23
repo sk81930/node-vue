@@ -47,14 +47,7 @@
                 <b-form @submit="onSubmit" v-if="show">
 
                   <b-form-group id="input-group-1" label="" label-for="input-1" class="mb-0">
-                    <editor
-                       ref="editor"
-                       :api-key="apikey"
-                       v-model="form.comment"
-                       :init="initEditor"
-                     >
-                        <span class="mention"></span>
-                    </editor>
+                    <textarea id="comment" v-model="form.comment"></textarea>
                   </b-form-group>
 
                   <fileUploader @filesdata="filedata" :emptyfiles="this.emptyfiles" />
@@ -80,8 +73,8 @@
             <div class="inner-dd" v-if="task.created_by_user">
               <b class="mb-0">Created By: </b><p>{{task.created_by_user.name}}</p>
             </div>
-            <div class="inner-dd" v-if="task.project_user">
-              <b class="mb-0">Project : </b><p>{{task.project_user.title}}</p>
+            <div class="inner-dd" v-if="task.project_data">
+              <b class="mb-0">Project : </b><p>{{task.project_data.title}}</p>
             </div>
 
             <div class="inner-dd" v-if="task.observer_users">
@@ -106,6 +99,8 @@
   import { mapMutations } from "vuex";
   import store from '../../Store';
 
+
+
   import Editor from '@tinymce/tinymce-vue'
 
   import { getTinymce } from '@tinymce/tinymce-vue/lib/cjs/main/ts/TinyMCE';
@@ -119,15 +114,18 @@
 
   import Comments from './comments.vue';
 
-  const editorRef = ref(null);
+  import ClassicEditor from './ckeditor.js';
+
+  let editorRef = ref(null);
 
 
 
 
   export default {
-      name: 'AddEditTask',
+      name: 'ViewTask',
       components: {
        'editor': Editor,
+       'ClassicEditor': ClassicEditor,
        'multiselect': Multiselect,
        'fileUploader': fileUploader,
        'Hightlight': Hightlight,
@@ -152,41 +150,16 @@
               projectOptions: [],
               assignToOptions: [],
               observerOptions: [],
+              mentionItems: [],
               priorityOptions: [{"label": "High",value : "high"},{"label": "Medium",value : "medium"},{"label": "Low",value : "low"}],
-              initEditor: {
-                   height: 200,
-                   menubar: false,
-                   plugins: [
-                     'advlist advcode autolink lists link image charmap print preview anchor mentions',
-                     'searchreplace visualblocks code fullscreen',
-                     'insertdatetime media table paste code help wordcount'
-                   ],
-                    toolbar:
-                     'undo redo | formatselect | bold italic backcolor | \
-                     alignleft aligncenter alignright alignjustify | \
-                     bullist numlist outdent indent | removeformat | code | image | help',
-                    mentions_selector: 'span.mymention',
-                    mentions_fetch: this.mentionsFetch,
-                    mentions_menu_complete: function (editor, userInfo) {
-                      var span = editor.getDoc().createElement('span');
-                      span.className = 'mymention';
-                      // store the user id in the mention so it can be identified later
-                      span.setAttribute('data-mention-id', userInfo.id);
-                      span.setAttribute('style', "color: #0a99e3;");
-                      span.appendChild(editor.getDoc().createTextNode('@' + userInfo.name));
-                      return span;
-                    },
-                    setup: (editor) => {
-                      editorRef.value = editor;
-                     // editor.on('keydown', this.handleKeyDown);
-                    }
-              }
           }
       },
-      created() {
+      async created() {
         if ('id' in this.$route.params) {
             var id = this.$route.params.id;
             this.form.taskid = id;
+
+            await this.mentionsFetch();
 
             this.getTaskByIdFunc(id);
 
@@ -200,6 +173,8 @@
       mounted() {
         this.appload = true;
 
+       
+
         // let user = store.getters["auth/user"];
         // this.form.name = user.name;
         // this.form.email = user.email;
@@ -207,7 +182,8 @@
       },
       methods: {
           selectedData(data) {
-             getTinymce().activeEditor.execCommand('mceInsertContent', false, " <b>"+data+"</b> ");
+             this.insertTextAtCursor(data);
+             //getTinymce().activeEditor.execCommand('mceInsertContent', false, " <b>"+data+"</b> ");
           },
           resetcommentparentfunc() {
              this.resetcomment = null;
@@ -221,13 +197,13 @@
               // Prevent default '@' insertion behavior
               e.preventDefault();
               // Insert a .mention element at the current cursor position
-              editorRef.value.insertContent('<span class="mention">@</span>');
+              //editorRef.value.insertContent('<span class="mention">@</span>');
             }
           },
           async onSubmit(event) {
               event.preventDefault()
               const formData = new FormData();
-              //this.emptyfiles = null;
+
 
               if(this.form.files.length > 0){
                  this.form.files.forEach(function(file,index){
@@ -244,14 +220,18 @@
               await store.dispatch('task/AddComment', formData).then(async response => {
 
 
+
+
                       
 
                       if(response.data.message){
+                          editorRef.setData("");
                           this.successprofile = response.data.message;
                           this.form.files = [];
                           this.form.comment = "";
                           this.emptyfiles = 1;
                           this.resetcomment = 1;
+                          this.getTaskByIdFunc(this.form.taskid);
                       }
 
 
@@ -262,10 +242,21 @@
               });
 
           },
+          async insertTextAtCursor(text) {
+              const selection = editorRef.model.document.selection;
+              const range = selection.getFirstRange();
+
+              if (range) {
+                  // Insert text at the cursor position
+                  editorRef.model.change(writer => {
+                      writer.insertText(text,  { bold: true, html: true }, range.start);
+                  });
+              }
+          },
           async getTaskByIdFunc(id) {
               await store.dispatch('task/getTaskById', {id:id}).then(async response => {
 
-                    let resultt = response.data;
+                    let resultt = response.data.data;
 
 
 
@@ -275,6 +266,10 @@
 
 
                     }
+
+                    this.initEditor();
+
+                   
                       
 
 
@@ -285,31 +280,125 @@
                    this.errors = errorsData;
               });
           },
-          async mentionsFetch(query, success) {
+          async initEditor() {
+
+               let __that = this;
+
+              setTimeout(function(){
+
+                  console.log(editorRef)
+                  if(typeof editorRef.model === "undefined"){
+                      ClassicEditor.create( document.querySelector( '#comment' ) ,{
+                        mention: {
+                            feeds: [
+                                {
+                                    marker: '@',
+                                    feed: __that.getFeedItems,
+                                    itemRenderer: item => {
+
+                                        const itemElement = document.createElement( 'button' );
+
+                                        itemElement.classList.add( 'custom-mention' );
+                                        itemElement.id = `mention-user-id-${ item.userId }`;
+                                        itemElement.textContent = `${ item.name } `;
+                                        return itemElement;
+                                    }
+                                }
+                            ]
+                        }
+                      }).then( editor => {
+
+                          editor.model.document.on( 'change:data', () => {
+                              let editorData = editor.getData();
+                              __that.form.comment = editorData;
+                          } );
+
+                          editorRef = editor;
+                          
+                      } )
+                      .catch( error => {
+                          console.error( error );
+                      } );
+                  }
+              },100)
+
+          },
+          async mentionsFetch() {
               await store.dispatch('auth/getUserRole').then(async response => {
 
-                   if(response.data && response.data.userrole && response.data.userrole.length > 0){
+                   if(response.data && response.data.data.userrole && response.data.data.userrole.length > 0){
 
                       var dataUser = [];
 
-                      response.data.userrole.forEach(function(user,index){
+                      response.data.data.userrole.forEach(function(user,index){
 
                         var id = user.id;
+                          const newDiv = document.createElement("div");
 
+                          // and give it some content
+                          const newContent = document.createTextNode("Hi there and greetings!");
 
-                          dataUser.push({id: id.toString(), name: user.name});
+                          // add the text node to the newly created div
+                          newDiv.appendChild(newContent);
+
+                          dataUser.push({ "userId": user.id, "name": "@"+user.name,  id: "@"+user.id, "text": "@"+user.name});
+
                       })
-                      const filteredUsers = dataUser.filter(user =>
-                          user.name.toLowerCase().includes(query.term.toLowerCase())
-                      );
-                      success(filteredUsers);
+                      this.mentionItems = dataUser;
                    }
-                      
 
 
               }).catch(error => {});
              
           },
+          async getFeedItems( queryText ) {
+              // As an example of an asynchronous action, return a promise
+              // that resolves after a 100ms timeout.
+              // This can be a server request or any sort of delayed action.
+              return new Promise( resolve => {
+                  setTimeout( () => {
+                      const itemsToDisplay = this.mentionItems
+                          // Filter out the full list of all items to only those matching the query text.
+                          .filter( isItemMatching )
+                          // Return 10 items max - needed for generic queries when the list may contain hundreds of elements.
+                          .slice( 0, 10 );
+
+                      resolve( itemsToDisplay );
+                  }, 100 );
+              } );
+
+              // Filtering function - it uses `name` and `username` properties of an item to find a match.
+              function isItemMatching( item ) {
+                  // Make the search case-insensitive.
+                  const searchString = queryText.toLowerCase();
+
+                  // Include an item in the search results if name or username includes the current user input.
+                  return (
+                      item.name.toLowerCase().includes( searchString ) ||
+                      item.id.toLowerCase().includes( searchString )
+                  );
+              }
+          },
+          async customItemRenderer( item ) {
+
+              const itemElement = document.createElement( 'span' );
+
+              itemElement.classList.add( 'custom-item' );
+              itemElement.id = `mention-list-item-id-${ item.id }`;
+              itemElement.textContent = `${ item.name } `;
+
+              const usernameElement = document.createElement( 'span' );
+
+              usernameElement.classList.add( 'custom-item-username' );
+              usernameElement.textContent = item.id;
+
+              itemElement.appendChild( usernameElement );
+
+              debugger;
+
+
+              return itemElement;
+          }
       }
   }
 </script>

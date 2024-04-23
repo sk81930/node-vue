@@ -43,10 +43,12 @@
 
 
 <script>
+  import { ref, watchEffect } from 'vue'
   import { mapGetters } from "vuex";
   import store from '../../Store';
   
   import {managerMenus,adminMenus} from "../../Routes/menus.js";
+  import { io } from "socket.io-client";
 
 
   let menus = [];
@@ -57,7 +59,8 @@
       data() {
           return {
               authname:null,
-              lagoutModal:false
+              lagoutModal:false,
+              socket:null,
           }
       },
       computed: {
@@ -74,7 +77,10 @@
                this.menuItem = managerMenus;
             }
             
-            this.opened = true
+            this.opened = true;
+      },
+      async mounted() {
+         // await store.dispatch('auth/initializeSocket');
       },
       methods: {
         async logout() {
