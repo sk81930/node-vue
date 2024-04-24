@@ -16,7 +16,8 @@ module.exports = (sequelize, DataTypes) => {
   message.init({
     conversation_id_user: DataTypes.BIGINT,
     body: DataTypes.TEXT,
-    read: DataTypes.INTEGER
+    attachment: DataTypes.JSON,
+    read: DataTypes.INTEGER,
   }, {
     sequelize,
     modelName: 'message',

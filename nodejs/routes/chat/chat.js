@@ -31,6 +31,17 @@ router.post("/sendMessage", Middleware.authenticate, (req, res, next) => {
       response.sendResponse([], false, err.message, 201);
    }
 });
+
+router.post("/sendFileMessage", Middleware.authenticate, (req, res, next) => {
+  Middleware.hasRole(req, res, next, ['admin','manager','user']);
+}, async (req,res) => { 
+   const response = new baseResponse(res);
+   try {
+     let result = await chatController.sendFileMessage(req.session,req.body,req.files,res);
+   } catch(err) {
+      response.sendResponse([], false, err.message, 201);
+   }
+});
 router.post("/addChatUser", Middleware.authenticate, (req, res, next) => {
   Middleware.hasRole(req, res, next, ['admin','manager','user']);
 }, async (req,res) => { 

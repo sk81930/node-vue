@@ -53,15 +53,29 @@
             <ul class="chat__list-messages" v-if="chatData">
               <li  v-for="(chatdd, chat_ind) in chatData" :index="chat_ind"  >
                   <div class="chat__time" v-if="chatdd && chatdd.message && shouldDisplayTimestamp(chat_ind,formatTimestamp(chatdd.updatedAt))">{{formatTimestamp(chatdd.updatedAt)}}</div>
-                  <div :class="getClassChat(chatdd,crUser.id)"  class="chat__bubble">
-                      {{chatdd.message}}
+                  <div :class="getClassChat(chatdd,crUser.id)"  class="chat__bubble" v-if="(chatdd.message == 'file' && chatdd.attachment && chatdd.attachment.path)">
+                    <a :href="apiUrl+clearUrl(chatdd.attachment.path)" target="_blank" download> 
+
+                      <svg  class="svg-icon link-img" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 112.55 122.88" style="enable-background:new 0 0 112.55 122.88" xml:space="preserve"><g><path class="st0" d="M104.41,6.1c6.26,5.13,6.93,11.83,7.62,13.46l0.34,2.5c0.9,5.39-1.65,12.75-5.58,17.38L89.2,59.84 c-6.76,7.84-18.04,10.44-27.48,6.37l-0.03,0.04c3.45,5.63,3.15,9.64,3.46,10.57c0.9,5.41-1.65,12.74-5.58,17.38L41.97,114.6 c-8.53,9.89-23.58,11.1-33.53,2.61c-5.04-5.04-7.84-9.31-8.37-16.49c-0.47-6.24,1.53-12.37,5.59-17.18l17.92-20.79 c5.01-5.14,7.5-5.86,13.33-7.47l2.5-0.34l10.66,1.56c0.22,0.08,0.44,0.18,0.65,0.27l0.03-0.04c-5.35-8.71-4.57-20.11,2.14-27.97 L70.48,8.37c4.11-4.77,9.99-7.71,16.15-8.19c5.37-0.89,12.77,1.64,17.38,5.58L104.41,6.1L104.41,6.1z M74.23,51.71l-3.66,4.24 l0.64,0.01l0.02,0l0.6-0.02l0.01,0l0.14-0.01l0.02,0c2.11-0.16,4.19-0.88,5.96-2.14c0.34-0.24,0.68-0.51,1.02-0.82l0,0l0,0 c0.3-0.27,0.62-0.59,0.93-0.95l0,0l0.12-0.13l17.45-20.24c1.47-1.7,2.36-3.75,2.68-5.86c0.07-0.44,0.11-0.87,0.13-1.26 c0.02-0.41,0.01-0.85-0.01-1.28l0-0.05l-0.01-0.11c-0.16-2.11-0.88-4.19-2.14-5.96c-0.24-0.34-0.51-0.67-0.78-0.97l-0.03-0.04 c-0.29-0.32-0.61-0.64-0.94-0.94l0,0l-0.06-0.05l-0.05-0.05L96.16,15c-1.69-1.43-3.7-2.3-5.78-2.61l-0.03,0 c-0.43-0.06-0.85-0.11-1.24-0.12c-0.41-0.02-0.84-0.01-1.27,0.01l-0.07,0l-0.1,0.01c-2.11,0.16-4.19,0.88-5.96,2.14 c-0.34,0.24-0.68,0.51-0.98,0.78l-0.03,0.03c-0.33,0.29-0.64,0.61-0.94,0.95l0,0l-0.12,0.13L62.2,36.55 c-1.47,1.7-2.36,3.75-2.68,5.86h0c-0.06,0.43-0.11,0.86-0.12,1.26c-0.02,0.41-0.01,0.85,0.01,1.28l0.01,0.15l0,0.01v0.02 c0.03,0.46,0.09,0.91,0.18,1.37l3.58-4.15l0.1-0.12l0.13-0.14l0,0l0.02-0.02c1.29-1.39,3.02-2.18,4.79-2.3 c1.78-0.13,3.62,0.39,5.1,1.6l0,0l0.02,0.01l0.09,0.08l0.02,0.02l0.02,0.02l0.01,0.01l0.02,0.01l0.07,0.06l0,0l0,0 c2.06,1.83,2.82,4.6,2.21,7.13c-0.12,0.5-0.3,1-0.54,1.48c-0.22,0.46-0.51,0.9-0.83,1.31l-0.02,0.02l-0.03,0.04l0,0l-0.01,0.02 l-0.1,0.12l0,0L74.23,51.71L74.23,51.71z M40.06,80.23L40.06,80.23c2.33,2.01,5.88,1.75,7.89-0.58l5.58-6.47 c0.65,1.45,1.04,3,1.16,4.57c0.25,3.44-0.79,6.97-3.19,9.75l-17.46,20.24c-2.4,2.79-5.73,4.34-9.16,4.59 c-3.38,0.25-6.84-0.75-9.59-3.05l-0.16-0.14c-2.78-2.4-4.34-5.73-4.59-9.16c-0.25-3.4,0.76-6.89,3.1-9.65l0.09-0.1l17.25-20l0,0 l0,0l0.21-0.24c2.4-2.78,5.73-4.34,9.16-4.59c1.58-0.12,3.18,0.04,4.71,0.47l-5.58,6.47C37.47,74.67,37.73,78.22,40.06,80.23 L40.06,80.23z"/></g></svg>
+                      <span>{{chatdd.attachment.name}}</span>
+                    </a>
                   </div>
+                  <div :class="getClassChat(chatdd,crUser.id)"  class="chat__bubble" v-html="chatdd.message"  v-else></div>
               </li>
              
-              <li v-for="(msg, index) in messages" :key="index">
-                <div class="chat__time">09:26</div>
-                <div class="chat__bubble chat__bubble--me">
-                  {{ msg }}
+              <li v-for="(msg, index2) in messages" :key="index2">
+                <div class="chat__time">{{formatTimestamp(msg.updatedAt)}}</div>
+                <div class="chat__bubble chat__bubble--me" :class="msg.class" >
+                  <p v-html="msg.message"></p>
+                  <p v-if="msg.class && msg.class == 'upload'">
+                      <div class="progressbar">
+                        <div class="shell">
+                          <div class="bar2" :style="{ width: `${uploadPercentage}%` }">
+                             <span>{{uploadPercentage}}%</span>
+                          </div>
+                        </div>
+                      </div>
+                  </p>
                 </div>
               </li>
             </ul>
@@ -71,15 +85,15 @@
             <div class="custom-form__send-wrapper">
 
               <EmojiPicker v-model="message_text" @input="startTyping" @keydown.enter="submitMessage" picker-type="input" @update:text="onSelectEmoji" ref="emojiPicker" />
-              <div class="custom-form__send-img" for="files">
-                  <svg for="files" class="svg-icon svg-icon--send-img" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 112.55 122.88" style="enable-background:new 0 0 112.55 122.88" xml:space="preserve"><g><path class="st0" d="M104.41,6.1c6.26,5.13,6.93,11.83,7.62,13.46l0.34,2.5c0.9,5.39-1.65,12.75-5.58,17.38L89.2,59.84 c-6.76,7.84-18.04,10.44-27.48,6.37l-0.03,0.04c3.45,5.63,3.15,9.64,3.46,10.57c0.9,5.41-1.65,12.74-5.58,17.38L41.97,114.6 c-8.53,9.89-23.58,11.1-33.53,2.61c-5.04-5.04-7.84-9.31-8.37-16.49c-0.47-6.24,1.53-12.37,5.59-17.18l17.92-20.79 c5.01-5.14,7.5-5.86,13.33-7.47l2.5-0.34l10.66,1.56c0.22,0.08,0.44,0.18,0.65,0.27l0.03-0.04c-5.35-8.71-4.57-20.11,2.14-27.97 L70.48,8.37c4.11-4.77,9.99-7.71,16.15-8.19c5.37-0.89,12.77,1.64,17.38,5.58L104.41,6.1L104.41,6.1z M74.23,51.71l-3.66,4.24 l0.64,0.01l0.02,0l0.6-0.02l0.01,0l0.14-0.01l0.02,0c2.11-0.16,4.19-0.88,5.96-2.14c0.34-0.24,0.68-0.51,1.02-0.82l0,0l0,0 c0.3-0.27,0.62-0.59,0.93-0.95l0,0l0.12-0.13l17.45-20.24c1.47-1.7,2.36-3.75,2.68-5.86c0.07-0.44,0.11-0.87,0.13-1.26 c0.02-0.41,0.01-0.85-0.01-1.28l0-0.05l-0.01-0.11c-0.16-2.11-0.88-4.19-2.14-5.96c-0.24-0.34-0.51-0.67-0.78-0.97l-0.03-0.04 c-0.29-0.32-0.61-0.64-0.94-0.94l0,0l-0.06-0.05l-0.05-0.05L96.16,15c-1.69-1.43-3.7-2.3-5.78-2.61l-0.03,0 c-0.43-0.06-0.85-0.11-1.24-0.12c-0.41-0.02-0.84-0.01-1.27,0.01l-0.07,0l-0.1,0.01c-2.11,0.16-4.19,0.88-5.96,2.14 c-0.34,0.24-0.68,0.51-0.98,0.78l-0.03,0.03c-0.33,0.29-0.64,0.61-0.94,0.95l0,0l-0.12,0.13L62.2,36.55 c-1.47,1.7-2.36,3.75-2.68,5.86h0c-0.06,0.43-0.11,0.86-0.12,1.26c-0.02,0.41-0.01,0.85,0.01,1.28l0.01,0.15l0,0.01v0.02 c0.03,0.46,0.09,0.91,0.18,1.37l3.58-4.15l0.1-0.12l0.13-0.14l0,0l0.02-0.02c1.29-1.39,3.02-2.18,4.79-2.3 c1.78-0.13,3.62,0.39,5.1,1.6l0,0l0.02,0.01l0.09,0.08l0.02,0.02l0.02,0.02l0.01,0.01l0.02,0.01l0.07,0.06l0,0l0,0 c2.06,1.83,2.82,4.6,2.21,7.13c-0.12,0.5-0.3,1-0.54,1.48c-0.22,0.46-0.51,0.9-0.83,1.31l-0.02,0.02l-0.03,0.04l0,0l-0.01,0.02 l-0.1,0.12l0,0L74.23,51.71L74.23,51.71z M40.06,80.23L40.06,80.23c2.33,2.01,5.88,1.75,7.89-0.58l5.58-6.47 c0.65,1.45,1.04,3,1.16,4.57c0.25,3.44-0.79,6.97-3.19,9.75l-17.46,20.24c-2.4,2.79-5.73,4.34-9.16,4.59 c-3.38,0.25-6.84-0.75-9.59-3.05l-0.16-0.14c-2.78-2.4-4.34-5.73-4.59-9.16c-0.25-3.4,0.76-6.89,3.1-9.65l0.09-0.1l17.25-20l0,0 l0,0l0.21-0.24c2.4-2.78,5.73-4.34,9.16-4.59c1.58-0.12,3.18,0.04,4.71,0.47l-5.58,6.47C37.47,74.67,37.73,78.22,40.06,80.23 L40.06,80.23z"/></g></svg>
+              <div class="custom-form__send-img" for="chatfile" @click="showFile">
+                  <svg for="chatfile" class="svg-icon svg-icon--send-img" version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 112.55 122.88" style="enable-background:new 0 0 112.55 122.88" xml:space="preserve"><g><path class="st0" d="M104.41,6.1c6.26,5.13,6.93,11.83,7.62,13.46l0.34,2.5c0.9,5.39-1.65,12.75-5.58,17.38L89.2,59.84 c-6.76,7.84-18.04,10.44-27.48,6.37l-0.03,0.04c3.45,5.63,3.15,9.64,3.46,10.57c0.9,5.41-1.65,12.74-5.58,17.38L41.97,114.6 c-8.53,9.89-23.58,11.1-33.53,2.61c-5.04-5.04-7.84-9.31-8.37-16.49c-0.47-6.24,1.53-12.37,5.59-17.18l17.92-20.79 c5.01-5.14,7.5-5.86,13.33-7.47l2.5-0.34l10.66,1.56c0.22,0.08,0.44,0.18,0.65,0.27l0.03-0.04c-5.35-8.71-4.57-20.11,2.14-27.97 L70.48,8.37c4.11-4.77,9.99-7.71,16.15-8.19c5.37-0.89,12.77,1.64,17.38,5.58L104.41,6.1L104.41,6.1z M74.23,51.71l-3.66,4.24 l0.64,0.01l0.02,0l0.6-0.02l0.01,0l0.14-0.01l0.02,0c2.11-0.16,4.19-0.88,5.96-2.14c0.34-0.24,0.68-0.51,1.02-0.82l0,0l0,0 c0.3-0.27,0.62-0.59,0.93-0.95l0,0l0.12-0.13l17.45-20.24c1.47-1.7,2.36-3.75,2.68-5.86c0.07-0.44,0.11-0.87,0.13-1.26 c0.02-0.41,0.01-0.85-0.01-1.28l0-0.05l-0.01-0.11c-0.16-2.11-0.88-4.19-2.14-5.96c-0.24-0.34-0.51-0.67-0.78-0.97l-0.03-0.04 c-0.29-0.32-0.61-0.64-0.94-0.94l0,0l-0.06-0.05l-0.05-0.05L96.16,15c-1.69-1.43-3.7-2.3-5.78-2.61l-0.03,0 c-0.43-0.06-0.85-0.11-1.24-0.12c-0.41-0.02-0.84-0.01-1.27,0.01l-0.07,0l-0.1,0.01c-2.11,0.16-4.19,0.88-5.96,2.14 c-0.34,0.24-0.68,0.51-0.98,0.78l-0.03,0.03c-0.33,0.29-0.64,0.61-0.94,0.95l0,0l-0.12,0.13L62.2,36.55 c-1.47,1.7-2.36,3.75-2.68,5.86h0c-0.06,0.43-0.11,0.86-0.12,1.26c-0.02,0.41-0.01,0.85,0.01,1.28l0.01,0.15l0,0.01v0.02 c0.03,0.46,0.09,0.91,0.18,1.37l3.58-4.15l0.1-0.12l0.13-0.14l0,0l0.02-0.02c1.29-1.39,3.02-2.18,4.79-2.3 c1.78-0.13,3.62,0.39,5.1,1.6l0,0l0.02,0.01l0.09,0.08l0.02,0.02l0.02,0.02l0.01,0.01l0.02,0.01l0.07,0.06l0,0l0,0 c2.06,1.83,2.82,4.6,2.21,7.13c-0.12,0.5-0.3,1-0.54,1.48c-0.22,0.46-0.51,0.9-0.83,1.31l-0.02,0.02l-0.03,0.04l0,0l-0.01,0.02 l-0.1,0.12l0,0L74.23,51.71L74.23,51.71z M40.06,80.23L40.06,80.23c2.33,2.01,5.88,1.75,7.89-0.58l5.58-6.47 c0.65,1.45,1.04,3,1.16,4.57c0.25,3.44-0.79,6.97-3.19,9.75l-17.46,20.24c-2.4,2.79-5.73,4.34-9.16,4.59 c-3.38,0.25-6.84-0.75-9.59-3.05l-0.16-0.14c-2.78-2.4-4.34-5.73-4.59-9.16c-0.25-3.4,0.76-6.89,3.1-9.65l0.09-0.1l17.25-20l0,0 l0,0l0.21-0.24c2.4-2.78,5.73-4.34,9.16-4.59c1.58-0.12,3.18,0.04,4.71,0.47l-5.58,6.47C37.47,74.67,37.73,78.22,40.06,80.23 L40.06,80.23z"/></g></svg>
                   <input 
-                      id ="files"
-                      ref="files" 
+                      id ="chatfile"
+                      ref="chatfile" 
                       type="file"
-                      multiple 
                       @change="handleFilesUpload"
                       style="display:none" 
+                      name="chatfile"
                   />
               </div>
               <button type="button" class="custom-form__send-submit" @click="submitMessage">
@@ -113,6 +127,8 @@
   import EmojiPicker from "vue3-emoji-picker";
   import "/node_modules/vue3-emoji-picker/dist/style.css";
 
+  const API_ROOT = import.meta.env.VITE_API_URL;
+
   let typingTimer;
 
   let rtcPeerConnection;
@@ -133,6 +149,7 @@
       },
       data() {
           return {
+              apiUrl : API_ROOT,
               socket: null,
               conversationId: null,
               messages: [],
@@ -154,6 +171,7 @@
               isRemote: false,
               isLocal: false,
               streamUserOnline: false,
+              uploadPercentage : 0,
           }
       },
       async created() {
@@ -190,6 +208,10 @@
                         message_data.message = dataM.message.body;
                         message_data.sender_id = dataM.sender_id;
                         message_data.reciever_id = dataM.reciever_id;
+
+                        if(dataM.message.body == "file" && dataM.message.attachment && dataM.message.attachment.path){
+                           message_data.attachment = dataM.message.attachment;
+                        }
 
                         chatData.push(message_data);
 
@@ -241,6 +263,10 @@
                   //console.log(data, this.chatData)
 
                   if(data.conversation_id == this.conversationId){
+
+                    if(data.attachment && data.attachment.path){
+                       this.messages = null;
+                    }
 
 
                     this.chatData.push(data)
@@ -723,6 +749,104 @@
                 }
               });
             }
+          },showFile(){
+            let that = this;
+            //debugger;
+            this.$refs.chatfile.click();
+          },
+          async handleFilesUpload(event){
+
+            let that = this;
+
+            var file = event.target.files[0];
+
+            if (file) {
+                const fileSizeInBytes = file.size;
+                let fileSize;
+                let fileSizeUnit;
+                
+                if (fileSizeInBytes < 1024) {
+                  fileSize = fileSizeInBytes;
+                  fileSizeUnit = 'B';
+                } else if (fileSizeInBytes < 1024 * 1024) {
+                  fileSize = fileSizeInBytes / 1024;
+                  fileSizeUnit = 'KB';
+                } else {
+                  fileSize = fileSizeInBytes / (1024 * 1024);
+                  fileSizeUnit = 'MB';
+                }
+                var message = "<div class='uplaod-inner'>";
+                message += "<div>"+file.name+" "+fileSize.toFixed(2)+fileSizeUnit+"</div>";
+                message += "</div>";
+
+                var data_sendd = {
+                  conversation_id : this.conversationId,
+                  message : message,
+                  reciever_id : this.chatUser.id,
+                  sender_id : this.crUser.id,
+                  updatedAt : new Date(),
+                  class : "upload",
+                  uploadPercentage : this.uploadPercentage,
+                }
+                  this.messages.push(data_sendd)
+
+
+
+                  const formData = new FormData();
+
+                  formData.append('chatFile', file);
+
+
+                  formData.append('userid', this.chatUser.id);
+                  formData.append('conversationId', this.conversationId);
+
+
+                  const config = {
+                    onUploadProgress: progressEvent => {
+                      let progress = (progressEvent.loaded / progressEvent.total) * 100;
+                      that.uploadPercentage = progress;
+                    }
+                  }
+                  let data_senddd = {
+                    config,
+                    formData
+                  }
+
+                  let __that = this;
+
+                  setTimeout(function(){
+                        var messageBody = document.querySelector('.chat__content');
+                        messageBody.scrollTop = messageBody.scrollHeight - messageBody.clientHeight;   
+                  },100)
+
+                  await store.dispatch('chat/sendFileMessage', data_senddd).then(async response => {
+
+
+                      if(response.data && response.data.data && response.data.data.updatedAt){
+
+
+                              this.socket.emit('chat_message', response.data.data);
+
+                              __that.message_text = '';
+                              var emojiPickerEl = __that.$refs.emojiPicker;
+
+                              const inputField = __that.$refs.emojiPicker.$el.querySelector('.v3-emoji-picker-input');
+                              inputField.value = "";
+                              inputField.dispatchEvent(new Event('input'));
+
+                          
+                      }
+                  }).catch(error => {
+
+                   console.log(error)
+
+                  });
+            }
+
+
+          },
+          clearUrl(url){
+            return url.replace("/public","");
           }
           
 

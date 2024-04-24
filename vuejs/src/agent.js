@@ -39,9 +39,9 @@ const requests = {
 	put: (url, body) =>
 		instance
 			.put(`${API_ROOT}${url}`, body),
-	post: (url, body) =>
+	post: (url, body, config = "") =>
 		instance
-			.post(`${API_ROOT}${url}`, body)
+			.post(`${API_ROOT}${url}`, body, config)
 }
 
 const Auth = {
@@ -75,6 +75,7 @@ const Task = {
 }
 const Chat = {
 	sendMessage: (formData) => requests.post("/chat/sendMessage",formData),
+	sendFileMessage: (formData,config) => requests.post("/chat/sendFileMessage",formData, config),
 	getChatByConId: (formData) => requests.post("/chat/getChatByConId",formData),
 	addChatUser: (formData) => requests.post("/chat/addChatUser",formData),
 	getConversations: () => requests.get("/chat/getConversations"),

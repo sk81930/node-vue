@@ -16,6 +16,9 @@ module.exports = {
       body: {
         type: Sequelize.TEXT('long')
       },
+      attachment: {
+        type: Sequelize.JSON
+      },
       read: {
         type: Sequelize.INTEGER,
         defaultValue: 0

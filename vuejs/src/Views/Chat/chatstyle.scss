@@ -556,12 +556,48 @@ body {
     &--you {
       margin-right: 2rem;
       background-color: var(--chat-bubble-you);
+      .link-img {
+          width: 6%;
+          path {
+
+                fill: #306ee6;
+                font-size: 11px;
+            
+          }
+          circle {
+
+              fill: #306ee6;
+              font-size: 11px;
+
+          }
+      }
+      a {
+        color: #306ee6;
+      }
     }
     &--me {
       margin-left: 2rem;
       background-color: var(--chat-bubble-me);
       align-self: flex-end;
       color: white;
+      .link-img {
+          width: 6%;
+          path {
+
+                fill: #fff;
+                font-size: 11px;
+            
+          }
+          circle {
+
+              fill: #fff;
+              font-size: 11px;
+
+          }
+      }
+      a {
+        color: #fff;
+      }
     }
   }
   &__time {
@@ -965,6 +1001,39 @@ body {
       align-items: center;
       cursor: pointer;
   }
+  .upload {
+      background: #adadad;
+  }
+  .progressbar {
+      display: flex;
+      align-items: center;
+      font-family: sans-serif;
+      padding: 11px 0px;
+      .shell {
+        height: 20px;
+        width: 100%;
+        border: 1px solid #aaa;
+        border-radius: 13px;
+        padding: 3px;
+      }
+
+      .bar2 {
+        background: linear-gradient(to right, #B993D6, #8CA6DB);
+        height: 20px;
+        width: 15px;
+        border-radius: 9px;
+        span {
+          float: right;
+          padding: 4px 5px;
+          color: #fff;
+          font-size: 0.7em
+        }
+      }
+  }
+  
+
+
+  
 
 
 }

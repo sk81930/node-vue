@@ -30,5 +30,10 @@ export default {
 
                 return await agent.Chat.sendMessage(data);
         },
+        async sendFileMessage({commit},data) {
+
+
+            return await agent.Chat.sendFileMessage(data.formData, data.config);
+        },
     }
 }

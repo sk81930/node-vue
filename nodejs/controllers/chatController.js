@@ -14,6 +14,7 @@ const UserModal = db.User;
 const ConversationUserModal = db.conversation_user;
 const ConversationModal = db.conversation;
 const MessageModal = db.message;
+const AttachmentModal = db.attachment;
 
 class chatController {
 	   /**
@@ -24,10 +25,105 @@ class chatController {
 	    constructor() {
 	    }
 
-        sendMessage = async (cr_user, body, res) => {
+        sendMessage = async (cr_user, body, res, attachmentData = {}) => {
 				const response = new baseResponse(res);
 				try {
 
+
+					if(body.conversationId == "" || body.conversationId == undefined || body.userid == "" || body.userid == undefined){
+                          response.sendResponse(null, false, "Something went wrong!", 500);
+					}
+
+					let dataCon = {
+	                      conversation_id : body.conversationId,
+	                      sender_id : cr_user.id,
+	                      reciever_id : body.userid,
+	        		};
+
+	        		var data_ret = await ConversationUserModal.create(dataCon)
+	                                .then(async conData2 => {
+	                                    
+	                                    return conData2;
+
+									}).catch((error) => {
+										return {error:error.message};
+								    });
+
+					if(data_ret && data_ret.error){
+
+						return response.sendResponse(null, false, datareturn.error, 404);
+
+					}else if(data_ret && data_ret.id){
+                        
+                        let dataMsg = {
+		                      conversation_id_user : data_ret.id,
+		                      body : body.message,
+		        		};
+		        		if(attachmentData && attachmentData.path){
+		        			dataMsg.attachment = attachmentData;
+		        		}
+
+						
+                        var datareturn = await MessageModal.create(dataMsg)
+	                                .then(async conData2 => {
+	                                    
+	                                    return conData2;
+
+									}).catch((error) => {
+										return {error:error.message};
+								    });
+
+						if(datareturn && datareturn.error){
+							return response.sendResponse(null, false, datareturn.error, 404);
+						}else if(datareturn && datareturn.id){
+
+							let data_res = {
+								conversation_id : data_ret.conversation_id,
+								updatedAt : data_ret.updatedAt,
+								sender_id : data_ret.sender_id,
+								reciever_id : data_ret.reciever_id,
+								message : body.message,
+							}
+							if(attachmentData && attachmentData.path){
+			        			data_res.attachment = attachmentData;
+			        		}
+		                    return response.sendResponse(data_res, true, "Successfully send message!", 200);
+						}else{
+							return response.sendResponse(null, false, "Message not send!", 404);
+						}		    
+
+					}else{
+						return response.sendResponse(null, false, "Message not send2!", 404);
+					}		    
+
+					
+
+				} catch(err) {
+					console.log(err)
+					response.sendResponse(null, false, err.message, 500);
+				}
+
+				return true;
+		}
+		sendFileMessage = async (cruser, body,fileData, res) => {
+				const response = new baseResponse(res);
+				try {
+
+					if(fileData && fileData.chatFile && fileData.chatFile.name){
+
+			        	let attachmentData = await this.uploadAttachment(fileData.chatFile, res);
+
+			        	if(attachmentData && attachmentData.path){
+			        		body.message = "file";
+			        		this.sendMessage(cruser, body, res, attachmentData)
+			        	}else{
+			        		return response.sendResponse(null, false, "Attachment not saved!", 404);
+			        	}
+
+			        }
+
+					//console.log(cruser, body, fileData)
+/*
 					if(body.conversationId == "" || body.conversationId == undefined || body.userid == "" || body.userid == undefined){
                           response.sendResponse(null, false, "Something went wrong!", 500);
 					}
@@ -85,7 +181,7 @@ class chatController {
 
 					}else{
 						return response.sendResponse(null, false, "Message not send2!", 404);
-					}		    
+					}	*/	    
 
 					
 
@@ -350,6 +446,56 @@ class chatController {
 			}
 
 				return true;
+		}
+		uploadAttachment = async (attachment, res) => {
+
+			const response = new baseResponse(res);
+
+			try{
+
+				var attachmentsData = [];
+
+				    let root = path.resolve();
+
+
+
+					let filepath = "/public/chat/"+attachment.originalFilename;
+
+	                var data = await readFile(attachment.path).then(async data => {
+
+								        
+
+				                	    var newPath = root+filepath;
+
+									    let data2 = await writeFile(newPath,data).then(async fileData => {
+														    return fileData;
+														}).catch((error) => {
+															return {error:error.message};
+													    });
+
+										return data2;		  
+								}).catch((error) => {
+									return {error:error.message};
+							    });
+					if(data && data.error){
+						return response.sendResponse(null, false, data.error, 500);
+					}
+
+					var ext_name = path.extname(filepath);
+
+					let dataAttachment = {
+						name : attachment.originalFilename,
+						path : filepath,
+						type : ext_name.replace(".","")
+
+					}
+
+				return dataAttachment;
+			} catch(err) {
+				return response.sendResponse(null, false, err.message, 500);
+				return null;
+			}	
+
 		}
 
 		
